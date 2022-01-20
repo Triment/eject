@@ -6,6 +6,10 @@ type Application struct {
 	Middle []func(*Context)
 }
 
+func CreateApp() *Application {
+	return new(Application)
+}
+
 func (app *Application) Inject(middle func(*Context)) {
 	app.Middle = append(app.Middle, middle)
 }
