@@ -22,9 +22,9 @@ func (t *Trie) Insert(path string) {
 			t = child
 		} else {
 			isLeaf := f[0] == '*'
-			nextTrie := &Trie{Part: f, Children: map[string]*Trie{}} //if start by '*' it is leaf
-			t.Children[f] = nextTrie                                 //move new trie to parent node's children
-			t = nextTrie                                             //pointed it to new trie
+			nextTrie := &Trie{Part: f, Children: make(map[string]*Trie)} //if start by '*' it is leaf
+			t.Children[f] = nextTrie                                     //move new trie to parent node's children
+			t = nextTrie                                                 //pointed it to new trie
 			if isLeaf {
 				break
 			}
