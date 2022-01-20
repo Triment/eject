@@ -7,7 +7,7 @@ type Application struct {
 }
 
 func CreateApp() *Application {
-	return new(Application)
+	return &Application{Middle: make([]func(*Context), 0)}
 }
 
 func (app *Application) Inject(middle func(*Context)) {
