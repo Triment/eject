@@ -13,7 +13,7 @@ type Context struct {
 }
 
 func CreateContext() *Context {
-	return new(Context)
+	return return &Context{Params: map[string]string{}}
 }
 
 func (c *Context) JSON(v interface{}) {
