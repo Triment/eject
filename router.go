@@ -10,6 +10,11 @@ type Router struct {
 	Handler map[string]func(*Context)
 }
 
+func GetPath(path string) ([]string, int) {
+	paths := strings.Split(path, "/")[1:]
+	return paths, len(paths)
+}
+
 func CreateRouter() *Router {
 	return &Router{Tree: &Trie{Part: ".", Children: map[string]*Trie{}}, Handler: map[string]func(*Context){}}
 }
