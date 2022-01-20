@@ -11,7 +11,7 @@ type Router struct {
 }
 
 func CreateRouter() *Router {
-	return &Router{Tree: &Trie{Part: ".", Children: map[string]*Trie{}}}
+	return &Router{Tree: &Trie{Part: ".", Children: map[string]*Trie{}}, Handler: map[string]func(*Context){}}
 }
 
 func (r *Router) RegistRouter(method string, path string, handler func(*Context)) {
