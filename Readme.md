@@ -11,14 +11,18 @@
 参数路由
 
 |注册路由|实际路由|匹配参数|
-｜-----｜-----|-----|
-|/hello/:user/:post|/hello/a/b|`{user:a,post:b}`|
-|/public/*path|/public/file/a.txt|`{path:file/a.txt}`
+|-----|-----|-----|
+|/hello/:user/:post|/hello/a/b|`{ user: a, post: b }`|
+|/public/*path|/public/file/a.txt|`{ path: file/a.txt }`
 
 参数路由的优先级`:`优先于`*`，如下面两个路由注册后会将path将匹配为123
+
 注册路由1: `/public/:path/hello`
+
 注册路由2: `/public/*path`
+
 实际路由: `/public/123/456`
+
 解析后的map为
 ```json
 {
@@ -70,4 +74,4 @@ todo
 
 实际应用
 
-* [fileserver](https://github.com/triment/fileserver.git)
+* [fileserver](https://github.com/triment/fileserver.git) 一个文件下载系统，仅支持下载，上传请使用其他方式。
