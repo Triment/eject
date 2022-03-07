@@ -24,12 +24,37 @@ func (r *Router) RegistRouter(method string, path string, handler func(*Context)
 	r.Handler[method+"-"+path] = handler
 }
 
+func (r *Router) HEAD(path string, handler func(*Context)) {
+	r.RegistRouter("HEAD", path, handler)
+}
+func (r *Router) CONNECT(path string, handler func(*Context)) {
+	r.RegistRouter("CONNECT", path, handler)
+}
+func (r *Router) OPTIONS(path string, handler func(*Context)) {
+	r.RegistRouter("OPTIONS", path, handler)
+}
 func (r *Router) GET(path string, handler func(*Context)) {
 	r.RegistRouter("GET", path, handler)
 }
 
 func (r *Router) POST(path string, handler func(*Context)) {
 	r.RegistRouter("POST", path, handler)
+}
+
+func (r *Router) PUT(path string, handler func(*Context)) {
+	r.RegistRouter("PUT", path, handler)
+}
+
+func (r *Router) DELETE(path string, handler func(*Context)) {
+	r.RegistRouter("DELETE", path, handler)
+}
+
+func (r *Router) PATCH(path string, handler func(*Context)) {
+	r.RegistRouter("PATCH", path, handler)
+}
+
+func (r *Router) TRACE(path string, handler func(*Context)) {
+	r.RegistRouter("TRACE", path, handler)
 }
 
 func (r *Router) Accept() func(*Context) {
