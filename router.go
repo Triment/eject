@@ -6,8 +6,11 @@ import (
 )
 
 type Router struct {
-	Tree    *Trie
-	Handler map[string]func(*Context)
+	Tree          *Trie
+	CurrentPath   string
+	CurrentHandle func(*Context)
+	CurrentMethod string
+	Handler       map[string]func(*Context)
 }
 
 func GetPath(path string) ([]string, int) {
@@ -16,7 +19,7 @@ func GetPath(path string) ([]string, int) {
 }
 
 func CreateRouter() *Router {
-	return &Router{Tree: &Trie{Part: ".", Children: map[string]*Trie{}}, Handler: map[string]func(*Context){}}
+	return &Router{Tree: &Trie{Part: ".", Children: map[string]*Trie{}}, CurrentMethod: "", CurrentPath: "", CurrentHandle: nil, Handler: map[string]func(*Context){}}
 }
 
 func (r *Router) RegistRouter(method string, path string, handler func(*Context)) {
@@ -24,40 +27,98 @@ func (r *Router) RegistRouter(method string, path string, handler func(*Context)
 	r.Handler[method+"-"+path] = handler
 }
 
-func (r *Router) HEAD(path string, handler func(*Context)) {
-	r.RegistRouter("HEAD", path, handler)
-}
-func (r *Router) CONNECT(path string, handler func(*Context)) {
-	r.RegistRouter("CONNECT", path, handler)
-}
-func (r *Router) OPTIONS(path string, handler func(*Context)) {
-	r.RegistRouter("OPTIONS", path, handler)
-}
-func (r *Router) GET(path string, handler func(*Context)) {
-	r.RegistRouter("GET", path, handler)
-}
-
-func (r *Router) POST(path string, handler func(*Context)) {
-	r.RegistRouter("POST", path, handler)
+func (r *Router) Before(interceptor func(*Context) bool) *Router{
+	wrap := func(wrap func(*Context) bool, dest func(*Context)) func(*Context) {
+		return func(ctx *Context) {
+			if wrap(ctx){
+				dest(ctx)
+			}
+		}
+	}
+	r.RegistRouter(r.CurrentMethod, r.CurrentPath, wrap(interceptor, r.CurrentHandle))
+	r.CurrentHandle = nil
+	r.CurrentMethod = ""
+	r.CurrentPath = ""
+	return r
 }
 
-func (r *Router) PUT(path string, handler func(*Context)) {
-	r.RegistRouter("PUT", path, handler)
+func (r *Router) clearPreviousHandle() {
+	if r.CurrentPath != "" && r.CurrentHandle != nil && r.CurrentMethod != "" {
+		r.RegistRouter(r.CurrentMethod, r.CurrentPath, r.CurrentHandle)
+	}
 }
 
-func (r *Router) DELETE(path string, handler func(*Context)) {
-	r.RegistRouter("DELETE", path, handler)
+func (r *Router) HEAD(path string, handler func(*Context)) *Router{
+	r.clearPreviousHandle()
+	r.CurrentPath = path
+	r.CurrentMethod = "HEAD"
+	r.CurrentHandle = handler
+	return r
+}
+func (r *Router) CONNECT(path string, handler func(*Context)) *Router{
+	r.clearPreviousHandle()
+	r.CurrentPath = path
+	r.CurrentMethod = "CONNECT"
+	r.CurrentHandle = handler
+	return r
+}
+func (r *Router) OPTIONS(path string, handler func(*Context)) *Router{
+	r.clearPreviousHandle()
+	r.CurrentPath = path
+	r.CurrentMethod = "OPTIONS"
+	r.CurrentHandle = handler
+	return r
+}
+func (r *Router) GET(path string, handler func(*Context)) *Router{
+	r.clearPreviousHandle()
+	r.CurrentPath = path
+	r.CurrentMethod = "GET"
+	r.CurrentHandle = handler
+	return r
 }
 
-func (r *Router) PATCH(path string, handler func(*Context)) {
-	r.RegistRouter("PATCH", path, handler)
+func (r *Router) POST(path string, handler func(*Context)) *Router{
+	r.clearPreviousHandle()
+	r.CurrentPath = path
+	r.CurrentMethod = "POST"
+	r.CurrentHandle = handler
+	return r
 }
 
-func (r *Router) TRACE(path string, handler func(*Context)) {
-	r.RegistRouter("TRACE", path, handler)
+func (r *Router) PUT(path string, handler func(*Context)) *Router{
+	r.clearPreviousHandle()
+	r.CurrentPath = path
+	r.CurrentMethod = "PUT"
+	r.CurrentHandle = handler
+	return r
+}
+
+func (r *Router) DELETE(path string, handler func(*Context)) *Router{
+	r.clearPreviousHandle()
+	r.CurrentPath = path
+	r.CurrentMethod = "DELETE"
+	r.CurrentHandle = handler
+	return r
+}
+
+func (r *Router) PATCH(path string, handler func(*Context)) *Router{
+	r.clearPreviousHandle()
+	r.CurrentPath = path
+	r.CurrentMethod = "PATCH"
+	r.CurrentHandle = handler
+	return r
+}
+
+func (r *Router) TRACE(path string, handler func(*Context)) *Router{
+	r.clearPreviousHandle()
+	r.CurrentPath = path
+	r.CurrentMethod = "TRACE"
+	r.CurrentHandle = handler
+	return r
 }
 
 func (r *Router) Accept() func(*Context) {
+	r.clearPreviousHandle()
 	return func(c *Context) {
 		paths := strings.Split(c.Req.URL.Path, "/")[1:]
 		node := r.Tree.Search(paths, len(paths), 0, c.Params)
