@@ -53,14 +53,24 @@ type ResMessage struct {
 	Body   interface{} `json:"body"`
 }
 
+func auth(context *eject.Context) bool {//鉴权中间件通过返回true来允许该路由正常运行，可在鉴权路由中进行响应
+    if context.Req.Header.Get("user")!= "admin" {
+    	return false
+    }
+    return true
+}
+
 func main(){
-    router := eject.CreateRouter()//创建路由中间件
+    router := eject.CreateRouter()//创建路由
     router.GET("/hello", func(context *eject.Context) {
         context.Res.Write([]byte("hello word")
-     }//注册路由
+     })//注册路由
     router.GET("/", func(context *eject.Context) {
         context.JSON(&ResMessage{Status: 200, Body: "请求成功"})
-    }
+    })
+    router.GET("/auth", func(context *eject.Context){
+        context.JSON(&ResMessage{Status: 200, Body: "请求成功"})
+    }).Before(auth)//鉴权中间件
     app := eject.CreateApp()//创建应用
 	app.Inject(router.Accept())//注入路由中间件
 	app.Listen(":4567")//监听端口 
