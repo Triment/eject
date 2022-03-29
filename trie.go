@@ -16,11 +16,10 @@ type Trie struct {
 func (t *Trie) Insert(path string) {
 	//split path
 	paths := strings.Split(path, "/")[1:]
-
 	for _, f := range paths {
 		if child, exist := t.Children[f]; exist {
 			t = child
-		} else {
+		} else if len(f) > 0 {
 			isLeaf := f[0] == '*'
 			nextTrie := &Trie{Part: f, Children: make(map[string]*Trie)} //if start by '*' it is leaf
 			t.Children[f] = nextTrie                                     //move new trie to parent node's children
@@ -28,6 +27,8 @@ func (t *Trie) Insert(path string) {
 			if isLeaf {
 				break
 			}
+		} else {
+			break
 		}
 	}
 	t.IsLeaf = true   //set leaf node to true
