@@ -37,7 +37,7 @@ func (t *Trie) Insert(path string) {
 
 //Search Node from Trie
 func (t *Trie) Search(paths []string, length int, index int, form map[string]string) *Trie {
-	if index == length { //the latest item of paths
+	if index == length || len(paths[index]) { //the latest item of paths
 		return t
 	}
 	if child, exist := t.Children[paths[index]]; exist { //精确匹配
