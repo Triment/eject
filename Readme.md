@@ -38,7 +38,7 @@
 用法
 
 ```bash
-go get -u https://github.com/triment/eject
+go get -u github.com/triment/eject
 ```
 
 ```golang
